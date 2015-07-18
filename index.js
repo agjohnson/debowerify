@@ -86,6 +86,21 @@ module.exports = function (file, options) {
     return bowerOptions;
   };
 
+  /**
+   * @param {string} Module name
+   * @param {Object} [optionsLocal] Browserify options object
+   * @return {Array} List of ignored module names
+   */
+  function moduleIgnored(moduleName, optionsLocal) {
+    optionsLocal = optionsLocal || options;
+    var ignoreModules = options.ignoreModules || [];
+
+    if (Array.isArray(ignoreModules) && ignoreModules.indexOf(moduleName) > -1) {
+        return true;
+    }
+    return false;
+  }
+
   function parse () {
     var chunks = data.split('');
 
@@ -99,6 +114,8 @@ module.exports = function (file, options) {
 
       var moduleName = getModuleName(pth);
       var moduleSubPath = getModuleSubPath(pth);
+
+      if (moduleIgnored(moduleName)) return;
 
       var module = getModule(moduleName);
       if (!module) return;

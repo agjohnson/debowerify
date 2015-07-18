@@ -85,4 +85,19 @@ describe('debowerify', function() {
     });
   });
 
+  it('should ignore resolving specified modules in options', function(done) {
+    var b = browserify();
+    b.add(path.join(__dirname, '..', 'public', 'external_ignored.js'));
+    b.external('test-package-c');
+    b.transform(debowerify, {ignoreModules: ['test-package-c']});
+    b.bundle(function (err, src) {
+      if (err) return done(err);
+
+      // Expect module to be missing
+      expect(function () { vm.runInNewContext(src) })
+        .to.throw(/Cannot find module \'test-package-c\'/);
+      done();
+    });
+  });
+
 });
